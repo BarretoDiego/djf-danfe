@@ -270,10 +270,15 @@ function observacoes (nfe) {
  * @param      {object}  data
  * @return     {string}
  */
-function renderHtml (data) {
+function renderHtml (data, shouldStyle = false) {
   if (!data) {
     return ''
   }
+  
+  if (shouldStyle){
+    return handlebars.compile(HANDLEBARS_STYLE+HANDLEBARS_TEMPLATE)(data)
+  }
+
   return handlebars.compile(HANDLEBARS_TEMPLATE)(data)
 }
 
@@ -385,27 +390,46 @@ module.exports.fromXML = function (xml) {
   return model(NFe(xml))
 }
 
-const HANDLEBARS_TEMPLATE = `<!DOCTYPE html>
-<html lang="pt-br">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DANFE</title>
-</head>
-<style>
+const HANDLEBARS_STYLE = `<style>
+html,
+body,
+p,
+ol,
+ul,
+li,
+dl,
+dt,
+dd,
+blockquote,
+figure,
+fieldset,
+legend,
+textarea,
+pre,
+iframe,
+hr,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  padding: 0;
+}
+* {
+  box-sizing: inherit;
+}
 .container {
   margin: 0 auto;
   position: relative;
   max-width: 960px;
 }
-
 .columns {
   display: flex; //margin-left: -0.75rem;
   //margin-right: -0.75rem;
   margin-top: -0.75rem;
 }
-
 .column {
   display: block;
   -ms-flex-preferred-size: 0;
@@ -416,143 +440,132 @@ const HANDLEBARS_TEMPLATE = `<!DOCTYPE html>
   -ms-flex-negative: 1;
   flex-shrink: 1;
 }
-
 .columns:not(:last-child) {
   margin-bottom: calc(1.5rem - 0.75rem);
 }
-
 .is-pulled-right {
   float: right !important;
 }
-
 .is-pulled-left {
   float: left !important;
 }
-
 .column.is-1 {
   -webkit-box-flex: 0;
   -ms-flex: none;
   flex: none;
   width: 8.33333%;
 }
-
+span {
+  font-style: inherit;
+  font-weight: inherit;
+}
+*:before,
+*:after {
+  -webkit-box-sizing: inherit;
+  box-sizing: inherit;
+}
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
-
 td,
 th {
   padding: 0;
   text-align: left;
 }
-
 .content.is-small {
   font-size: 0.75rem;
 }
-
 .content.is-medium {
   font-size: 1.25rem;
 }
-
 .content.is-large {
   font-size: 1.5rem;
 }
 </style>
 <style>
-
+html,
+body {
+  font-family: Courier New;
+  margin: 12px;
+  margin-top: 0px;
+  line-height: 1;
+  color: black !important;
+  font-size: 11px;
+  font-weight: 500 !important;
+}
 .area {
   width: 778px !important;
 }
-
 .quadro_codigo_barra {
   padding: 0px !important;
 }
-
 .codigo_barra {
   height: 56px;
 }
-
 .chave {
   height: 33px;
   font-size: 82%;
   font-weight: bold;
   text-align: center;
 }
-
 .protocolo,
 .consulta,
 .chave {
   padding: 2px;
 }
-
 .protocolo {
   flex: 0 0 296px;
 }
-
 .codigo_barra,
 .chave {
   border-bottom: 1px solid black;
 }
-
 .consulta {
   font-size: 10px;
   text-align: center;
 }
-
 .quadro_danfe {
   flex: 0 0 96px;
   line-height: 1.1;
 }
-
 .quadro_identificacao {
   flex: 0 0 378px;
   font-weight: bold;
   font-size: 13px
 }
-
 .quadro_cabecalho {
   height: 149px !important;
 }
-
 div.quadro div.columns:nth-child(2) {
   border-top: 1px solid black;
 }
-
 div.quadro div.columns:first-child div.column {
   padding: 0px;
 }
-
 .linha div.column:first-child {
   border-left: 1px solid black;
 }
-
 .quadro .linha div.column {
   border-bottom: 1px solid black;
   border-right: 1px solid black;
 }
-
 .conteudo_campo {
   padding: 0 0 0 2px;
 }
-
 .quadro.imposto div.linha div.column div:nth-child(2),
 .direita {
   text-align: right;
 }
-
 .quadro div.columns:first-child div.column {
   margin-top: 5px;
 }
-
 .grupo .quadro .linha {
   height: 33px;
 }
-
 .grupo {
   margin-top: 5px;
 }
-
 .tcampo {
   font-weight: bold;
   font-size: 8px;
@@ -560,105 +573,82 @@ div.quadro div.columns:first-child div.column {
   padding-left: 2px;
   text-align: left;
 }
-
 .texto_recibo {
   font-weight: bold;
   font-size: 9px;
   text-align: left;
 }
-
 .center {
   text-align: center;
 }
-
 .bold {
   font-weight: bold;
 }
-
 .operacao {
   font-size: 14px;
   border: 1px solid black;
   padding: 2px;
 }
-
 .numero,
 .canhoto_nr {
   font-size: 11px;
   font-weight: bold;
 }
-
 .danfe {
   font-size: 13px;
   font-weight: bold;
 }
-
 .itens {
   font-size: 10px;
 }
-
-
 .data {
   flex: 0 0 100px;
   text-align: center;
 }
-
 .uf {
   flex: 0 0 30px;
 }
-
 .placa {
   flex: 0 0 70px;
 }
-
 .nome {
   flex: 0 0 300px;
 }
-
 .fisco {
   flex: 0 0 284px;
 }
-
 .complemento {
   height: 114px !important;
 }
-
 .complemento {
   font-size: 10px;
 }
-
 .canhoto_nr {
   flex: 0 0 171px;
 }
-
 .area_canhoto_nr {
   height: 65px;
   border-left: 0px !important;
   line-height: 1.5;
   padding-left: 3px !important;
 }
-
 .canhoto_assinatura {
   flex: 0 0 458px;
 }
-
 .duplicatas .duplicata {
   font-size: 0.9rem;
   text-align: center;
   padding-right: 3px;
   padding-left: 3px;
-
   border-right: 1px solid gray;
 }
-
 .duplicatas .duplicata div {
   margin-top: 2px;
 }
-
 .duplicatas .tcampo {
   font-size: 0.8rem;
   margin-top: 1px;
 }
-
 table td,
 table th {
   border: 1px solid black !important;
@@ -666,14 +656,13 @@ table th {
   padding: 2px !important;
   color: black !important;
 }
-
 table {
   margin-bottom: 1px !important;
   width: 100%;
 }
-</style>
+</style>`;
 
-<body>
+const HANDLEBARS_TEMPLATE = `
   <div class="container area">
     <!-- Canhoto  -->
     <div class="columns grupo">
@@ -730,7 +719,7 @@ table {
               <div class="conteudo_campo">{{emitente.fantasia}}</div>
               <div class="conteudo_campo">{{emitente.endereco}}, {{emitente.numero}}</div>
               <div class="conteudo_campo">{{emitente.complemento}}</div>
-              <div class="conteudo_campo">{{emitente.bairro}} - {{emitente.municipio}} / {{emitente.uf}}</div>
+              <div class="conteudo_campo">{{emitente.bairro}} - {{emitente.municipio}}/{{emitente.uf}}</div>
               <div class="conteudo_campo">CEP:{{emitente.cep}} - Fone: {{emitente.telefone}}</div>
             </div>
             <div class="column quadro_danfe">
@@ -748,7 +737,7 @@ table {
               </span>
             </div>
             <div class="column quadro_codigo_barra ">
-              <div class="codigo_barra">barra</div>
+              <div class="codigo_barra"> CODIGO DE BARRAS</div>
               <div class="chave">
                 <div class="tcampo">CHAVE DE ACESSO</div>
                 {{chave}}
@@ -796,7 +785,7 @@ table {
         </div>
       </div>
     </div>
-    <!-- DEstinatário / remetente -->
+    <!-- Destinatário/remetente -->
     <div class="columns grupo">
       <div class="column ">
         <div class="quadro">
@@ -1150,7 +1139,4 @@ table {
         </div>
       </div>
     </div>
-  </div>
-</body>
-
-</html>`
+  </div>`
